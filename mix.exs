@@ -7,7 +7,7 @@ defmodule Chat.Mixfile do
      elixir: "~> 1.0",
      elixirc_paths: ["lib", "web"],
      compilers: [:phoenix] ++ Mix.compilers,
-     deps: deps]
+     deps: deps()]
   end
 
   # Configuration for the OTP application

@@ -14,8 +14,8 @@ defmodule Chat.RoomChannel do
   """
   def join("rooms:lobby", message, socket) do
     Process.flag(:trap_exit, true)
-    :timer.send_interval(5000, :ping)
-    send(self, {:after_join, message})
+    :timer.send_interval(10_000, :ping)
+    send(self(), {:after_join, message})
 
     {:ok, socket}
   end
@@ -24,23 +24,29 @@ defmodule Chat.RoomChannel do
     {:error, %{reason: "unauthorized"}}
   end
 
-  def handle_info({:after_join, msg}, socket) do
-    broadcast! socket, "user:entered", %{user: msg["user"]}
+  def handle_info({:after_join, %{"user" => user}}, socket) do
+    broadcast! socket, "user:entered", %{user: user}
     push socket, "join", %{status: "connected"}
-    {:noreply, socket}
+    {:noreply, assign(socket, :user, user)}
   end
   def handle_info(:ping, socket) do
     push socket, "new:msg", %{user: "SYSTEM", body: "ping"}
     {:noreply, socket}
   end
 
-  def terminate(reason, _socket) do
+  def terminate(reason, socket) do
     Logger.debug"> leave #{inspect reason}"
+    Chat.UserList.remove(socket.assigns[:user])
     :ok
   end
 
   def handle_in("new:msg", msg, socket) do
     broadcast! socket, "new:msg", %{user: msg["user"], body: msg["body"]}
     {:reply, {:ok, %{msg: msg["body"]}}, assign(socket, :user, msg["user"])}
+  end
+  def handle_in("user:set_username", msg, socket) do
+    broadcast! socket, "user:set_username", %{previous: socket.assigns.user, next: msg["username"]}
+    push socket, "user:set", %{user: msg["username"]}
+    {:noreply, assign(socket, :user, msg["username"])}
   end
 end
