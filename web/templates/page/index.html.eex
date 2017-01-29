@@ -1,18 +1,2 @@
-<div id="messages" class="container">
-</div>
-<div id="footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-3">
-        <div class="input-group">
-          <span class="input-group-addon">@</span>
-          <input id="username" type="text" placeholder="username">
-          <button id="setUsername">Set</button>
-        </div><!-- /input-group -->
-      </div><!-- /.col-lg-6 -->
-      <div class="col-sm-9">
-        <input id="message-input" class="form-control" />
-      </div><!-- /.col-lg-6 -->
-    </div><!-- /.row -->
-  </div>
+<div id="root">
 </div>
