@@ -26081,6 +26081,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.connectWebsocket = connectWebsocket;
 exports.setUsername = setUsername;
 exports.changeUserForm = changeUserForm;
+exports.sendMessage = sendMessage;
 
 var _phoenix = require("phoenix");
 
@@ -26104,12 +26105,16 @@ var joinChannel = function joinChannel(socket) {
     var state = getState();
     var userName = state.user.username;
 
-    var chan = socket.channel("rooms:lobby", { user: userName });
-    chan.join().receive("ok", function () {
-      return console.log("Joined rooms:lobby");
-    }).receive("ignore", function () {
-      return console.log("Ignoring unrecognized channel");
-    });
+    if (socket.channel == null || socket.channel == undefined) {
+      var _chan = socket.channel("rooms:lobby", { user: userName });
+      _chan.join().receive("ok", function () {
+        return console.log("Joined rooms:lobby");
+      }).receive("ignore", function () {
+        return console.log("Ignoring unrecognized channel");
+      });
+    } else {
+      var _chan2 = socket.channel;
+    }
 
     dispatch({ type: 'CHANNEL_JOINED', channel: chan });
     dispatch(configureChannelCallbacks(chan));
@@ -26138,6 +26143,13 @@ var configureChannelCallbacks = function configureChannelCallbacks(channel) {
       });
     });
 
+    channel.on("user:set_failed", function (msg) {
+      dispatch({
+        type: 'USERNAME_CHANGE_FAILED',
+        error: msg.error
+      });
+    });
+
     channel.on("user:left", function (msg) {
       dispatch({ type: 'USER_LEFT', user: msg.user });
     });
@@ -26146,11 +26158,13 @@ var configureChannelCallbacks = function configureChannelCallbacks(channel) {
   };
 };
 
-function setUsername(username, channel) {
-  return function (dispatch) {
+function setUsername(username) {
+  return function (dispatch, getState) {
     if (username.length < 1) {
       return;
     }
+    var state = getState();
+    var channel = state.socket.channel;
     channel.push("user:set_username", { username: username });
     dispatch({ type: 'SETTING_USER' });
   };
@@ -26162,14 +26176,23 @@ function changeUserForm(contents) {
   };
 }
 
+function sendMessage(message) {
+  return function (dispatch, getState) {
+    if (message.length < 1) {
+      return;
+    };
+    var state = getState();
+    var channel = state.socket.channel;
+    var user = state.user.username;
+    channel.push("new:msg", { user: user, body: message });
+    dispatch({ type: 'SENDING_MESSAGE' });
+  };
+}
+
 });
 
 ;require.register("web/static/js/app.js", function(exports, require, module) {
 'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -26239,46 +26262,6 @@ var Root = function (_React$Component) {
 
 _reactDom2.default.render(_react2.default.createElement(Root, null), document.getElementById('root'));
 
-var Application = function () {
-  function Application() {
-    _classCallCheck(this, Application);
-  }
-
-  _createClass(Application, null, [{
-    key: 'init',
-    value: function init() {
-      // $input.off("keypress").on("keypress", e => {
-      //   if (e.keyCode == 13) {
-      //     chan.push("new:msg", {user: $username.val(), body: $input.val()})
-      //     $input.val("")
-      //   }
-      // });
-      //
-    }
-  }, {
-    key: 'sanitize',
-    value: function sanitize(html) {
-      return $("<div/>").text(html).html();
-    }
-  }, {
-    key: 'messageTemplate',
-    value: function messageTemplate(msg) {
-      var username = this.sanitize(msg.user || "anonymous");
-      var body = this.sanitize(msg.body);
-
-      return '<p><a href=\'#\'>[' + username + ']</a>&nbsp; ' + body + '</p>';
-    }
-  }]);
-
-  return Application;
-}();
-
-$(function () {
-  return Application.init();
-});
-
-exports.default = Application;
-
 });
 
 require.register("web/static/js/containers/App.js", function(exports, require, module) {
@@ -26323,29 +26306,72 @@ var App = function (_React$Component) {
       dispatch((0, _actions.connectWebsocket)());
     }
   }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      scrollTo(0, document.body.scrollHeight);
+    }
+  }, {
+    key: '_sanitize',
+    value: function _sanitize(html) {
+      return $("<div/>").text(html).html();
+    }
+  }, {
     key: '_handleSubmit',
     value: function _handleSubmit(ev) {
       ev.preventDefault();
       var usernameInput = this.refs.usernameInput;
-      var _props = this.props,
-          socket = _props.socket,
-          dispatch = _props.dispatch;
-      var channel = socket.channel;
+      var dispatch = this.props.dispatch;
 
 
-      dispatch((0, _actions.setUsername)(usernameInput.value, channel));
+      dispatch((0, _actions.setUsername)(usernameInput.value));
+    }
+  }, {
+    key: '_handleMessageSubmit',
+    value: function _handleMessageSubmit(ev) {
+      ev.preventDefault();
+      var messageInput = this.refs.messageInput;
+      var dispatch = this.props.dispatch;
+
+
+      dispatch((0, _actions.sendMessage)(messageInput.value));
+      messageInput.value = '';
     }
   }, {
     key: 'render',
     value: function render() {
-      var user = this.props.user;
+      var _this2 = this;
+
+      var _props = this.props,
+          user = _props.user,
+          messages = _props.messages;
       var usernameForm = user.usernameForm;
 
+      var messageList = messages.messages;
 
       return _react2.default.createElement(
         'div',
         { className: 'container' },
-        _react2.default.createElement('div', { id: 'messages', className: 'container' }),
+        _react2.default.createElement(
+          'div',
+          { id: 'messages', className: 'container' },
+          messageList.map(function (m, i) {
+            var username = _this2._sanitize(m.user);
+            var body = _this2._sanitize(m.body);
+            return _react2.default.createElement(
+              'p',
+              { key: i },
+              _react2.default.createElement(
+                'a',
+                { href: '#' },
+                '[',
+                username,
+                ']'
+              ),
+              '\xA0 ',
+              body
+            );
+          })
+        ),
         _react2.default.createElement('div', { id: 'root' }),
         _react2.default.createElement(
           'div',
@@ -26386,7 +26412,11 @@ var App = function (_React$Component) {
               _react2.default.createElement(
                 'div',
                 { className: 'col-sm-9' },
-                _react2.default.createElement('input', { id: 'message-input', className: 'form-control' })
+                _react2.default.createElement(
+                  'form',
+                  { onSubmit: this._handleMessageSubmit.bind(this) },
+                  _react2.default.createElement('input', { id: 'message-input', ref: 'messageInput', className: 'form-control' })
+                )
               )
             )
           )
@@ -26434,6 +26464,10 @@ var _socket = require('./socket');
 
 var _socket2 = _interopRequireDefault(_socket);
 
+var _messages = require('./messages');
+
+var _messages2 = _interopRequireDefault(_messages);
+
 var _redux = require('redux');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -26441,10 +26475,70 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var reducers = (0, _redux.combineReducers)({
   socket: _socket2.default,
   user: _user2.default,
-  userList: _userList2.default
+  userList: _userList2.default,
+  messages: _messages2.default
 });
 
 exports.default = reducers;
+
+});
+
+require.register("web/static/js/reducers/messages.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var initialState = {
+  messages: [],
+  sending: false
+};
+
+var messagesReducer = function messagesReducer() {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+  var action = arguments[1];
+
+  switch (action.type) {
+    case 'SENDING_MESSAGE':
+      return _extends({}, state, {
+        sending: true
+      });
+    case 'NEW_MESSAGE':
+      return _extends({}, state, {
+        messages: [].concat(_toConsumableArray(state.messages), [action.message])
+      });
+    case 'USER_ENTERED':
+      return _extends({}, state, {
+        messages: [].concat(_toConsumableArray(state.messages), [{
+          user: 'SYSTEM',
+          body: action.username + ' has connected.'
+        }])
+      });
+    case 'USERNAME_CHANGED':
+      return _extends({}, state, {
+        messages: [].concat(_toConsumableArray(state.messages), [{
+          user: 'SYSTEM',
+          body: action.previous + ' changed name to ' + action.next
+        }])
+      });
+    case 'USER_LEFT':
+      return _extends({}, state, {
+        messages: [].concat(_toConsumableArray(state.messages), [{
+          user: 'SYSTEM',
+          body: action.user + ' has left.'
+        }])
+      });
+    default:
+      return state;
+  }
+};
+
+exports.default = messagesReducer;
 
 });
 
@@ -26490,7 +26584,7 @@ exports.default = socketReducer;
 });
 
 require.register("web/static/js/reducers/user.js", function(exports, require, module) {
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -26498,14 +26592,12 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var randomNumberBetween = function randomNumberBetween(min, max) {
-  var minimum = Math.ceil(min);
-  var maximum = Math.floor(max);
-  return Math.floor(Math.random() * (maximum - minimum)) + minimum;
-};
+function generateUID() {
+  return ("0000" + (Math.random() * Math.pow(36, 4) << 0).toString(36)).slice(-4);
+}
 
 var initialUserState = {
-  username: "anonymous#" + randomNumberBetween(3, 20000),
+  username: "anonymous#" + generateUID(),
   usernameForm: {
     sending: false
   }
@@ -26525,6 +26617,12 @@ var userReducer = function userReducer() {
     case 'USER_SET':
       return _extends({}, state, {
         username: action.username,
+        usernameForm: _extends({}, state.usernameForm, {
+          sending: false
+        })
+      });
+    case 'USERNAME_CHANGE_FAILED':
+      return _extends({}, state, {
         usernameForm: _extends({}, state.usernameForm, {
           sending: false
         })

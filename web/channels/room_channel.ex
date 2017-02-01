@@ -14,7 +14,7 @@ defmodule Chat.RoomChannel do
   """
   def join("rooms:lobby", message, socket) do
     Process.flag(:trap_exit, true)
-    # :timer.send_interval(10_000, :ping)
+    :timer.send_interval(60_000, :ping)
     send(self(), {:after_join, message})
 
     {:ok, socket}
@@ -44,9 +44,18 @@ defmodule Chat.RoomChannel do
     broadcast! socket, "new:msg", %{user: msg["user"], body: msg["body"]}
     {:reply, {:ok, %{msg: msg["body"]}}, assign(socket, :user, msg["user"])}
   end
+
   def handle_in("user:set_username", msg, socket) do
-    broadcast! socket, "user:set_username", %{previous: socket.assigns.user, next: msg["username"]}
-    push socket, "user:set", %{user: msg["username"]}
-    {:noreply, assign(socket, :user, msg["username"])}
+    username = msg["username"]
+    case Chat.UserList.change(socket.assigns.user, username) do
+      :ok ->
+        broadcast! socket, "user:set_username", %{previous: socket.assigns.user, next: username}
+        push socket, "user:set", %{user: username}
+        {:noreply, assign(socket, :user, username)}
+      :error ->
+        push socket, "user:set_failed", %{error: "Username exists."}
+        {:noreply, socket}
+    end
   end
+
 end

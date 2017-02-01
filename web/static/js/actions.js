@@ -18,10 +18,14 @@ const joinChannel = (socket) => {
     const state = getState();
     const userName = state.user.username;
 
-    let chan = socket.channel("rooms:lobby", {user: userName});
-    chan.join()
-    .receive("ok", () => console.log("Joined rooms:lobby"))
-    .receive("ignore", () => console.log("Ignoring unrecognized channel"))
+    if (socket.channel == null || socket.channel == undefined) {
+      let chan = socket.channel("rooms:lobby", {user: userName});
+      chan.join()
+      .receive("ok", () => console.log("Joined rooms:lobby"))
+      .receive("ignore", () => console.log("Ignoring unrecognized channel"))
+    } else {
+      let chan = socket.channel;
+    }
 
     dispatch({type: 'CHANNEL_JOINED', channel: chan});
     dispatch(configureChannelCallbacks(chan));
@@ -50,6 +54,13 @@ const configureChannelCallbacks = (channel) => {
       });
     })
 
+    channel.on("user:set_failed", msg => {
+      dispatch({
+        type: 'USERNAME_CHANGE_FAILED',
+        error: msg.error
+      })
+    })
+
     channel.on("user:left", msg => {
       dispatch({ type: 'USER_LEFT', user: msg.user });
     });
@@ -58,11 +69,13 @@ const configureChannelCallbacks = (channel) => {
   }
 }
 
-export function setUsername(username, channel) {
-  return (dispatch) => {
+export function setUsername(username) {
+  return (dispatch, getState) => {
     if (username.length < 1) {
       return
     }
+    const state = getState();
+    const channel = state.socket.channel;
     channel.push("user:set_username", {username: username});
     dispatch({type: 'SETTING_USER'});
   }
@@ -71,5 +84,18 @@ export function setUsername(username, channel) {
 export function changeUserForm(contents) {
   return (dispatch) => {
     dispatch({type: 'USER_FORM_CHANGE', content: contents});
+  }
+}
+
+export function sendMessage(message) {
+  return (dispatch, getState) => {
+    if (message.length < 1) {
+      return
+    };
+    const state = getState();
+    const channel = state.socket.channel;
+    const user    = state.user.username;
+    channel.push("new:msg", {user: user, body: message});
+    dispatch({type: 'SENDING_MESSAGE'});
   }
 }

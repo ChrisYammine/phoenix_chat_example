@@ -1,11 +1,9 @@
-const randomNumberBetween = (min, max) => {
-  let minimum = Math.ceil(min);
-  let maximum = Math.floor(max);
-  return Math.floor(Math.random() * (maximum - minimum)) + minimum;
+function generateUID() {
+    return ("0000" + (Math.random()*Math.pow(36,4) << 0).toString(36)).slice(-4)
 }
 
 const initialUserState = {
-  username: "anonymous#" + randomNumberBetween(3, 20000),
+  username: "anonymous#" + generateUID(),
   usernameForm: {
     sending: false
   }
@@ -30,6 +28,14 @@ const userReducer = (state = initialUserState, action) => {
           sending: false
         }
       };
+    case 'USERNAME_CHANGE_FAILED':
+      return {
+        ...state,
+        usernameForm: {
+          ...state.usernameForm,
+          sending: false
+        }
+      }
     default:
       return state;
   }
