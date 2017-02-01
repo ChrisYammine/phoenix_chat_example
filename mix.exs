@@ -4,7 +4,7 @@ defmodule Chat.Mixfile do
   def project do
     [app: :chat,
      version: "0.0.1",
-     elixir: "~> 1.0",
+     elixir: "~> 1.4",
      elixirc_paths: ["lib", "web"],
      compilers: [:phoenix] ++ Mix.compilers,
      deps: deps()]
@@ -15,7 +15,7 @@ defmodule Chat.Mixfile do
   # Type `mix help compile.app` for more information
   def application do
     [mod: {Chat, []},
-     applications: [:phoenix, :phoenix_html, :cowboy, :logger, :postgrex]]
+     applications: [:phoenix, :phoenix_html, :phoenix_pubsub, :cowboy, :logger, :postgrex]]
   end
 
   # Specifies your project dependencies
