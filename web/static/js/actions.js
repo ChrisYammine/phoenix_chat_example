@@ -18,14 +18,10 @@ const joinChannel = (socket) => {
     const state = getState();
     const userName = state.user.username;
 
-    if (socket.channel == null || socket.channel == undefined) {
-      let chan = socket.channel("rooms:lobby", {user: userName});
-      chan.join()
-      .receive("ok", () => console.log("Joined rooms:lobby"))
-      .receive("ignore", () => console.log("Ignoring unrecognized channel"))
-    } else {
-      let chan = socket.channel;
-    }
+    let chan = socket.channel("rooms:lobby", {user: userName});
+    chan.join()
+    .receive("ok", () => console.log("Joined rooms:lobby"))
+    .receive("ignore", () => console.log("Ignoring unrecognized channel"))
 
     dispatch({type: 'CHANNEL_JOINED', channel: chan});
     dispatch(configureChannelCallbacks(chan));

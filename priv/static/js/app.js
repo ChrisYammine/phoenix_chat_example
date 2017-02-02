@@ -26105,16 +26105,12 @@ var joinChannel = function joinChannel(socket) {
     var state = getState();
     var userName = state.user.username;
 
-    if (socket.channel == null || socket.channel == undefined) {
-      var _chan = socket.channel("rooms:lobby", { user: userName });
-      _chan.join().receive("ok", function () {
-        return console.log("Joined rooms:lobby");
-      }).receive("ignore", function () {
-        return console.log("Ignoring unrecognized channel");
-      });
-    } else {
-      var _chan2 = socket.channel;
-    }
+    var chan = socket.channel("rooms:lobby", { user: userName });
+    chan.join().receive("ok", function () {
+      return console.log("Joined rooms:lobby");
+    }).receive("ignore", function () {
+      return console.log("Ignoring unrecognized channel");
+    });
 
     dispatch({ type: 'CHANNEL_JOINED', channel: chan });
     dispatch(configureChannelCallbacks(chan));
