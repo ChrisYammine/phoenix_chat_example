@@ -8,20 +8,24 @@ use Mix.Config
 # meaningful, we use this information when generating URLs.
 config :chat, Chat.Endpoint,
   http: [port: 4000],
-  url: [host: "www.chrisyammine.com"],
+  url: [host: "chrisyammine.com"],
   debug_errors: true,
   server: true,
   code_reloader: false,
-  cache_static_manifest: "priv/static/manifest.json",
+  cache_static_lookup: false,
   check_origin: false,
-  watchers: [],
-  https: [
-    port: 443,
-    keyfile: System.get_env("SSL_KEYFILE_PATH"),
-    certfile: System.get_env("SSL_CERTFILE_PATH"),
-    cacertfile: System.get_env("SSL_INTERMEDIATE_CERTFILE_PATH")
-  ],
-  force_ssl: [rewrite_on: [:x_forwarded_proto]]
+  watchers: []
+
+# ## SSL Support
+#
+# To get SSL working, you will need to add the `https` key
+# to the previous section:
+#
+#  config:chat, Chat.Endpoint,
+#    ...
+#    https: [port: 443,
+#            keyfile: System.get_env("SOME_APP_SSL_KEY_PATH"),
+#            certfile: System.get_env("SOME_APP_SSL_CERT_PATH")]
 #
 # Where those two env variables point to a file on
 # disk for the key and cert.
