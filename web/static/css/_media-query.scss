@@ -1,0 +1,36 @@
+@media (max-width: 768px){
+  .messagesContainer {
+    padding-bottom: 4em!important;
+  }
+  .footContainer {
+    .form-group {
+      display: inline-table;
+      vertical-align: top;
+      width: calc(100% - 65px);
+    }
+    button.btn.btn-primary {
+      float: right;
+    }
+  }
+
+}
+
+@media (min-width: 768px) {
+  .footContainer {
+    height: 5em!important;
+    .form-group {
+      width: calc(100% - 65px);
+      margin-right: 5px;
+    }
+  }
+
+}
+
+@media (min-width: 1200px) {
+  .footContainer {
+    .form-group {
+      width: calc(100% - 120px);
+    }
+  }
+
+}

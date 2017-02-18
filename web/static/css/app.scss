@@ -1,5 +1,9 @@
 /* Sticky footer styles
 -------------------------------------------------- */
+
+@import "variables";
+@import "media-query";
+
 html {
   position: relative;
   min-height: 100%;
@@ -8,37 +12,30 @@ body {
   /* Margin bottom by footer height */
   margin-top: 50px;
   margin-bottom: 60px;
+  background-color: $background-color;
 }
 
-#footer {
+.footContainer {
   position: fixed;
   bottom: 0px;
   width: 100%;
   /* Set the fixed height of the footer here */
-  height: 60px;
+  height: 8em;
   padding-top: 1em;
-  background-color: #f5f5f5;
+  background-color: $footer-background;
 }
 
-#messages {
+.messagesContainer {
   margin-top: 0px;
+  padding-top: 1em;
+  padding-bottom: 1em;
 }
+
+
 /* Custom page CSS
 -------------------------------------------------- */
 /* Not required for template or sticky footer method. */
 
-body > .container {
-  padding: 40px 15px 0;
-}
 .container .text-muted {
   margin: 20px 0;
-}
-
-#footer > .container {
-  padding-right: 15px;
-  padding-left: 15px;
-}
-
-code {
-  font-size: 80%;
 }

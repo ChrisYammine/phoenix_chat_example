@@ -54,6 +54,13 @@ exports.config = {
       plugins: ["transform-object-rest-spread"],
       // Do not use ES6 compiler in vendor code
       ignore: [/web\/static\/vendor/]
+    },
+    sass: {
+      mode: 'native',
+      options: {
+        includePaths: ['web/static/css']
+      },
+      sourceMapEmbed: true
     }
   },
 

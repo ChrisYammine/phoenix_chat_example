@@ -37,33 +37,39 @@ class App extends React.Component {
     const messageList = messages.messages;
 
     return (
-      <div className="container">
-        <div id="messages" className="container">
+      <div>
+        <div id="messages" className="container messagesContainer">
           {messageList.map((m, i) => {
             let username = this._sanitize(m.user);
             let body = this._sanitize(m.body);
             return (<p key={i}><a href='#'>[{username}]</a>&nbsp; {body}</p>)
           })}
         </div>
-        <div id="root">
-        </div>
-        <div id="footer">
+        <div id="footer" className="footContainer">
           <div className="container">
             <div className="row">
-              <div className="col-sm-3">
-                <form onSubmit={this._handleSubmit.bind(this)}>
-                  <div className="input-group">
-                    <span className="input-group-addon">@</span>
-                    <input
-                     id="username"
-                     type="text"
-                     ref="usernameInput"
-                     placeholder="username" />
-                    <button type="submit">Set</button>
+              <div className="col-sm-4">
+                <form
+                  onSubmit={this._handleSubmit.bind(this)}
+                  className="form-inline"
+                >
+                  <div className="form-group">
+                    <label className="sr-only" htmlFor="username">username</label>
+                    <div className="input-group">
+                      <div className="input-group-addon">@</div>
+                      <input
+                        id="username"
+                        type="text"
+                        ref="usernameInput"
+                        placeholder="username"
+                        className="form-control usernameInput"
+                      />
+                    </div>
                   </div>
+                  <button type="submit" className="btn btn-primary">Set</button>
                 </form>
               </div>
-              <div className="col-sm-9">
+              <div className="col-sm-8">
                 <form onSubmit={this._handleMessageSubmit.bind(this)}>
                   <input id="message-input" ref="messageInput" className="form-control" />
                 </form>
