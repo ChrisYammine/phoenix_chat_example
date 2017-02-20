@@ -14,10 +14,13 @@ defmodule Chat.RoomChannel do
   """
   def join("rooms:lobby", message, socket) do
     Process.flag(:trap_exit, true)
-    :timer.send_interval(60_000, :ping)
-    send(self(), {:after_join, message})
-
-    {:ok, socket}
+    case Chat.UserList.add(message["user"]) do
+      {:ok, user} ->
+        send(self(), {:after_join, %{"user" => user}})
+        {:ok, socket}
+      :error ->
+        join("rooms:lobby", Map.put(message, "user", message["user"] <> "(1)"), socket)
+    end
   end
 
   def join("rooms:" <> _private_subtopic, _message, _socket) do
