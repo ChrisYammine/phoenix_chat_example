@@ -29,7 +29,7 @@ defmodule Chat.UserList do
   def handle_call({:add, username}, _from, %{users: users} = state) do
     case MapSet.member?(users, username) do
       false ->
-        {:reply, :ok, %{state | users: MapSet.put(users, username)}}
+        {:reply, {:ok, username}, %{state | users: MapSet.put(users, username)}}
       true ->
         {:reply, :error, state}
     end
