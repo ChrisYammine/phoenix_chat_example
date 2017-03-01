@@ -4,11 +4,28 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="Home of the projects of Christopher Yammine">
+    <meta name="author" content="Christopher Yammine">
 
-    <title>Hello Phoenix!</title>
+    <title>Doge Chat</title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+    <link rel="apple-touch-icon" sizes="57x57" href="<%= static_path(@conn, "/images/favicon.ico/apple-icon-57x57.png") %>">
+    <link rel="apple-touch-icon" sizes="60x60" href="<%= static_path(@conn, "/images/favicon.ico/apple-icon-60x60.png") %>">
+    <link rel="apple-touch-icon" sizes="72x72" href="<%= static_path(@conn, "/images/favicon.ico/apple-icon-72x72.png") %>">
+    <link rel="apple-touch-icon" sizes="76x76" href="<%= static_path(@conn, "/images/favicon.ico/apple-icon-76x76.png") %>">
+    <link rel="apple-touch-icon" sizes="114x114" href="<%= static_path(@conn, "/images/favicon.ico/apple-icon-114x114.png") %>">
+    <link rel="apple-touch-icon" sizes="120x120" href="<%= static_path(@conn, "/images/favicon.ico/apple-icon-120x120.png") %>">
+    <link rel="apple-touch-icon" sizes="144x144" href="<%= static_path(@conn, "/images/favicon.ico/apple-icon-144x144.png") %>">
+    <link rel="apple-touch-icon" sizes="152x152" href="<%= static_path(@conn, "/images/favicon.ico/apple-icon-152x152.png") %>">
+    <link rel="apple-touch-icon" sizes="180x180" href="<%= static_path(@conn, "/images/favicon.ico/apple-icon-180x180.png") %>">
+    <link rel="icon" type="image/png" sizes="192x192"  href="<%= static_path(@conn, "/images/favicon.ico/android-icon-192x192.png") %>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<%= static_path(@conn, "/images/favicon.ico/favicon-32x32.png") %>">
+    <link rel="icon" type="image/png" sizes="96x96" href="<%= static_path(@conn, "/images/favicon.ico/favicon-96x96.png") %>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<%= static_path(@conn, "/images/favicon.ico/favicon-16x16.png") %>">
+    <link rel="manifest" href="<%= static_path(@conn, "/images/favicon.ico/manifest.json") %>">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="<%= static_path(@conn, "/images/favicon.ico/ms-icon-144x144.png") %>">
+    <meta name="theme-color" content="#ffffff">
   </head>
 
   <body>
@@ -22,12 +39,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Phoenix Chat</a>
+          <img class="navbar-brand" src="<%= static_path(@conn, "/images/favicon.ico/favicon-32x32.png") %>" alt="Picture of a Shiba Inu">
+          <a class="navbar-brand" rel="home" title="Doge Chat" href="#">
+            Doge Chat
+          </a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav pull-right">
-            <li><a href="http://github.com/chrismccord/phoenix_chat_example">source</a></li>
-            <li><a href="http://www.phoenixframework.org/">Learn more about the Phoenix Framework</a></li>
+            <li><a href="http://github.com/ChrisYammine/phoenix_chat_example">source</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
