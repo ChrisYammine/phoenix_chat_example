@@ -63,6 +63,7 @@ class App extends React.Component {
                         ref="usernameInput"
                         placeholder="username"
                         className="form-control usernameInput"
+                        autoComplete="off"
                       />
                     </div>
                   </div>
@@ -70,7 +71,7 @@ class App extends React.Component {
                 </form>
               </div>
               <div className="col-sm-8">
-                <form onSubmit={this._handleMessageSubmit.bind(this)}>
+                <form autoComplete="off" onSubmit={this._handleMessageSubmit.bind(this)}>
                   <input id="message-input" ref="messageInput" className="form-control" />
                 </form>
               </div>

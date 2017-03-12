@@ -26439,7 +26439,8 @@ var App = function (_React$Component) {
                         type: 'text',
                         ref: 'usernameInput',
                         placeholder: 'username',
-                        className: 'form-control usernameInput'
+                        className: 'form-control usernameInput',
+                        autoComplete: 'off'
                       })
                     )
                   ),
@@ -26455,7 +26456,7 @@ var App = function (_React$Component) {
                 { className: 'col-sm-8' },
                 _react2.default.createElement(
                   'form',
-                  { onSubmit: this._handleMessageSubmit.bind(this) },
+                  { autoComplete: 'off', onSubmit: this._handleMessageSubmit.bind(this) },
                   _react2.default.createElement('input', { id: 'message-input', ref: 'messageInput', className: 'form-control' })
                 )
               )

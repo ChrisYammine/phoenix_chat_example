@@ -1,7 +1,7 @@
 defmodule Chat.UserList do
   use GenServer
   @default_state %{users: MapSet.new()}
-
+  # TODO: Use an ETS table for this instead
   # API
 
   def start_link do
@@ -18,6 +18,10 @@ defmodule Chat.UserList do
 
   def remove(username) when is_binary(username) do
     GenServer.cast(__MODULE__, {:remove, username})
+  end
+
+  def dump_state do
+    GenServer.call(__MODULE__, :dump_state)
   end
 
   # Callbacks
@@ -45,6 +49,11 @@ defmodule Chat.UserList do
         {:reply, :error, state}
     end
   end
+
+  def handle_call(:dump_state, _from, state) do
+    {:reply, state, state}
+  end
+
 
   def handle_cast({:remove, username}, %{users: users} = state) do
     Chat.Endpoint.broadcast!("rooms:lobby", "user:left", %{user: username})
