@@ -14,7 +14,7 @@ defmodule Chat.RoomChannel do
   """
   def join("rooms:lobby", message, socket) do
     Process.flag(:trap_exit, true)
-    case Chat.UserList.add(message["user"]) do
+    case Chat.UserList.add(message["user"], socket) do
       {:ok, user} ->
         send(self(), {:after_join, %{"user" => user}})
         {:ok, socket}
@@ -29,7 +29,7 @@ defmodule Chat.RoomChannel do
 
   def handle_info({:after_join, %{"user" => user}}, socket) do
     broadcast! socket, "user:entered", %{user: user}
-    push socket, "user_list:current", Chat.UserList.dump_state
+    push socket, "user_list:current", %{users: Chat.UserList.dump_state}
     {:noreply, assign(socket, :user, user)}
   end
   def handle_info(:ping, socket) do
@@ -37,9 +37,8 @@ defmodule Chat.RoomChannel do
     {:noreply, socket}
   end
 
-  def terminate(reason, socket) do
+  def terminate(reason, _socket) do
     Logger.debug"> leave #{inspect reason}"
-    Chat.UserList.remove(socket.assigns[:user])
     :ok
   end
 

@@ -26160,7 +26160,7 @@ var configureChannelCallbacks = function configureChannelCallbacks(channel) {
     });
 
     channel.on("user:entered", function (msg) {
-      dispatch({ type: 'USER_ENTERED', username: msg.user });
+      dispatch({ type: 'USER_ENTERED', username: msg.user.name, color: msg.user.color });
     });
 
     channel.on("user:set_username", function (msg) {
