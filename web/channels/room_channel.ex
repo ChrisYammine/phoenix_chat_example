@@ -30,7 +30,7 @@ defmodule Chat.RoomChannel do
   def handle_info({:after_join, %{"user" => user}}, socket) do
     broadcast! socket, "user:entered", %{user: user}
     push socket, "user_list:current", %{users: Chat.UserList.dump_state}
-    {:noreply, assign(socket, :user, user)}
+    {:noreply, assign(socket, :user, user.name)}
   end
   def handle_info(:ping, socket) do
     push socket, "new:msg", %{user: "SYSTEM", body: "ping"}
