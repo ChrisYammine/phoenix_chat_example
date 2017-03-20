@@ -44,7 +44,8 @@ defmodule Chat.UserList do
   end
 
   def handle_call({:change, from, to}, _, {table, refs} = state) do
-    with {:ok, val} <- lookup(table, from),
+    with false <- :ets.member(table, to),
+         {:ok, val} <- lookup(table, from),
          true <- :ets.insert(table, {to, val}),
          true <- :ets.delete(table, from),
          {:ok, new_refs} <- update_refs(refs, from, to) do
